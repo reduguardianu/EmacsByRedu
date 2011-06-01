@@ -1,0 +1,296 @@
+; -*- emacs-lisp -*-
+(server-mode t)
+
+;; set look&feel
+(setq default-frame-alist '((background-color . "white")
+			    (foreground-color . "black")
+			    (cursor-color     . "#6c6c6c")
+			    (font . "-*-Monaco-normal-r-*-*-17-102-120-120-c-*-iso8859-1")))
+
+;; set major mode according to filename
+(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+(add-to-list 'auto-mode-alist '("\\.h\\'"   . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.hpp\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("SConstruct" . python-mode))
+(add-to-list 'auto-mode-alist '("SConscript" . python-mode))
+
+;; check os
+(setq mac (equal system-type 'darwin))
+(setq my-emacs-dir "~/dotemacs/")
+(when mac (load-file (concat my-emacs-dir "mac.el")))
+
+;; load modules
+(setq modules-to-load (mapcar (lambda (module-name) (concat my-emacs-dir module-name))
+                              '("psvn" "yas" "magit" "json" "google-maps" "erlang-mode")))
+(setq load-path (append modules-to-load load-path))
+(load-file (concat my-emacs-dir "erlang.el"))
+
+;; set indentation
+(setq-default indent-tabs-mode nil)
+(setq tab-width 4)
+(add-hook 'c++-mode-hook (lambda () (c-set-style "stroustrup")))
+
+;; higlight current line
+;; http://emacs-fu.blogspot.com/2008/12/highlighting-current-line.html
+(defface hl-line '((t (:background "Gray")))
+  "Face to use for `hl-line-face'." :group 'hl-line)
+(setq hl-line-face 'hl-line)
+(global-hl-line-mode t) ; turn it on for all modes by default
+
+;; marek tabs, trailing whitespaces and too long lines
+(require 'whitespace)
+(setq whitespace-style '(tabs
+                         lines-tail
+                         trailing))
+(global-whitespace-mode t)
+
+;; git mode for Emacs
+(require 'magit)
+(global-set-key [f12] 'magit-status)
+
+(require 'yasnippet)
+(yas/initialize)
+(yas/load-directory (concat my-emacs-dir "yas/snippets"))
+
+(global-set-key [f2] 'new-frame)
+(global-set-key [f7] (lambda () (interactive) (find-file "~/.emacs")))
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key (kbd "C-x t") 'toggle-truncate-lines)
+
+(defun other-window-backward () (interactive) (other-window -1))
+(global-set-key (kbd "C-,") 'other-window-backward)
+(global-set-key (kbd "C-.") 'other-window)
+
+(show-paren-mode t)
+(menu-bar-mode nil)
+(unless (equal system-type 'darwin)
+  (tool-bar-mode nil))
+(transient-mark-mode t)
+(font-lock-mode t)
+(scroll-bar-mode -1)
+(setq inhibit-startup-message t)
+(setq echo-keystrokes 0.1)
+(global-font-lock-mode 1)
+(defalias 'yes-or-no-p 'y-or-n-p)
+(setq confirm-kill-emacs 'yes-or-no-p)
+
+(global-set-key (kbd "M-RET") 'ff-find-related-file)
+
+(ido-mode t)
+(setq ido-enable-flex-matching t) ;; fuzzy matching
+
+(setq x-select-enable-clipboard t)
+(setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
+
+(global-set-key (kbd "M-n") 'next-error)
+(global-set-key (kbd "M-p") 'previous-error)
+
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+(put 'set-goal-column 'disabled nil)
+(put 'scroll-left 'disabled nil)
+(put 'erase-buffer 'disabled nil)
+
+(defun lmm-create-tags ()
+  (interactive)
+  (let ((command (cond ((string-equal major-mode "perl-mode") "etags *")
+		       ((or (string-equal major-mode "c-mode")
+			    (string-equal major-mode "c++-mode")) "etags *.cpp *.h")
+		       ((string-equal major-mode "erlang-mode") "etags *.erl"))))
+    (shell-command command)))
+(global-set-key [f9] 'lmm-create-tags)
+
+
+(defun lmm-kill-debug-buffer-if-exists ()
+  "Kill the buffer if already exists (stop debugging)"
+  (let* ((script-buffer-name (buffer-name))
+         (debug-buffer-name (concat "*gud-" script-buffer-name "*"))
+         (buffer (get-buffer debug-buffer-name)))
+    (if buffer
+        (progn
+          (switch-to-buffer script-buffer-name)
+          (delete-other-windows)
+          (kill-buffer buffer)))))
+
+(defun lmm-run-perldb ()
+  "Runs perl debugger for current buffer"
+  (perldb (concat "perl -d " (buffer-file-name))))
+
+(defun lmm-run-perldb-stop-current-line ()
+  "Run perl debubbuger for current buffer and stop at current line"
+  (let ((line-no (int-to-string (line-number-at-pos))))
+    (lmm-run-perldb)
+    (insert (concat "c " line-no))))
+
+(global-set-key [f8] (lambda ()
+                       (interactive)
+                       (lmm-kill-debug-buffer-if-exists)
+                       (lmm-run-perldb-stop-current-line)))
+
+(defun lmm-sub-args ()
+  (interactive)
+  (re-search-backward "sub\\(.*\\){" nil t)
+  (let ((fun-name (match-string 1)))
+    (next-line)
+    (beginning-of-line)
+    (re-search-forward "my\s*(")
+    (let ((vars-list ())
+          (bound (save-excursion (end-of-line) (point))))
+      (while (re-search-forward ".*?$\\(.*?\\)[,)]" bound t)
+        (add-to-list 'vars-list (match-string 1)))
+      (setq vars-list (reverse vars-list))
+      (end-of-line)
+      (insert "\n")
+      (while (car vars-list)
+        (insert (concat "die " "\"" (car vars-list)  " must be defined in [" fun-name  "]\\n\" " "unless defined $" (car vars-list) ";\n"))
+        (setq vars-list (cdr vars-list))))
+    (let ((sub-beg (save-excursion (search-backward "sub") (point))))
+      (indent-region sub-beg (point)))))
+
+
+(global-set-key [(f4)] (lambda () (interactive)
+                         (if (equal (buffer-name) "*eshell*")
+                             (delete-window)
+                           (progn
+                             (select-window (split-window))
+                             (eshell)))))
+
+(global-set-key [(shift f4)] (lambda () (interactive)
+                               (if (equal (buffer-name (window-buffer (other-window 1))) "*eshell*")
+                                   (delete-window)gdb-display-breakpoints-buffer
+                                 (progn
+                                   (let ((start-window (selected-window)))
+                                     (select-window (split-window))
+                                     (eshell)
+                                     (select-window start-window))))))
+
+(defun lmm-compile ()
+  ""
+  (interactive)
+  (compile "time scons -QD -j 2 -k"))
+(global-set-key (kbd "C-c c") #'lmm-compile)
+(global-set-key (kbd "C-c v") #'compile)
+
+
+
+;;==================================================
+;; STRZAŁKI
+;;==================================================
+; Domyślnie:
+;  lewo  - poprzednie okno
+;  prawo - następne okno
+;  góra  - jedna linia w górę (scroll)
+;  dół  - jedna linia w dół (scroll)
+;
+; (toggle-arrow-keys) aby zmienić strzałki na poruszanie się po oknie
+;   (lewo, prawo, góra dół). Ponowne wywołanie przywraca domyślne
+;   ustawienie
+;
+(defun scroll-down-one-line () (interactive) (scroll-down 1))
+(defun scroll-up-one-line () (interactive) (scroll-up 1))
+
+(defvar toggled-arrow-keys t)
+(defun toggle-arrow-keys ()
+  (interactive)
+  (if toggled-arrow-keys
+      (progn
+	(global-set-key (kbd "<up>") 'scroll-down-one-line)
+	(global-set-key (kbd "<down>") 'scroll-up-one-line)
+
+	(global-set-key (kbd "<left>") (lambda (&optional n)
+					 (interactive "p")
+					 (if n
+					     (other-window (- n))
+					   (other-window -1))))3
+
+	(global-set-key (kbd "<right>") (lambda (&optional n)
+					  (interactive "p")
+					  (if n
+					      (other-window n)
+					    (other-window 1))))
+	(setq toggled-arrow-keys nil))
+    (progn
+      (global-set-key (kbd "<left>") 'backward-char)
+      (global-set-key (kbd "<right>") 'forward-char)
+      (global-set-key (kbd "<up>") 'previous-line)
+      (global-set-key (kbd "<down>")'next-line)
+      (setq toggled-arrow-keys t))))
+(toggle-arrow-keys)
+
+
+(defun erlang-insert-edoc ()
+  "Insert edoc."
+  (interactive)
+  (save-excursion
+    (when (re-search-forward "^\\s *-spec\\s +\\([a-zA-Z0-9_]+\\)\\s *(\\(\\(.\\|\n\\)*?\\))\\s *->[ \t\n]*\\(.+?\\)\\." nil t)
+      (let* ((beg (match-beginning 0))
+             (funcname (match-string-no-properties 1))
+             (arg-string (match-string-no-properties 2))
+             (retval (match-string-no-properties 4))
+             (args (split-string arg-string "[ \t\n,]" t)))
+        (when (re-search-forward (concat "^\\s *" funcname "\\s *(\\(\\(.\\|\n\\)*?\\))\\s *->") nil t)
+          (let ((arg-types (split-string (match-string-no-properties 1) "[ \t\n,]" t)))
+            (goto-char beg)
+            (insert "%%-----------------------------------------------------------------------------\n")
+            (insert "%% @doc\n")
+            (insert "%% Your description goes here\n")
+            (insert "%% @spec " funcname "(")
+            (dolist (arg args)
+              (insert (car arg-types) "::" arg)
+              (setq arg-types (cdr arg-types))
+              (when arg-types
+                (insert ", ")))
+            (insert ") ->\n")
+            (insert "%%       " retval "\n")
+            (insert "%% @end\n")
+            (insert "%%-----------------------------------------------------------------------------\n")))))))
+
+
+(defun lmm-sub-args ()
+  (interactive)
+  (re-search-backward "sub\\(.*\\){" nil t)
+  (let ((fun-name (match-string 1)))
+    (next-line)
+    (beginning-of-line)
+    (re-search-forward "my\s*(")
+    (let ((vars-list ())
+          (bound (save-excursion (end-of-line) (point))))
+      (while (re-search-forward ".*?$\\(.*?\\)[,)]" bound t)
+        (add-to-list 'vars-list (match-string 1)))
+      (setq vars-list (reverse vars-list))
+      (end-of-line)
+      (insert "\n")
+      (while (car vars-list)
+        (insert (concat "die " "\"" (car vars-list)  " must be defined in [" fun-name  "]\\n\" " "unless defined $" (car vars-list) ";\n"))
+        (setq vars-list (cdr vars-list))))
+    (let ((sub-beg (save-excursion (search-backward "sub") (point))))
+      (indent-region sub-beg (point)))))
+
+
+(set-face-attribute 'font-lock-string-face nil :foreground "red")
+(set-face-attribute 'font-lock-keyword-face nil :weight 'bold :foreground "blue")
+(set-face-attribute 'font-lock-type-face nil :weight 'bold)
+(set-face-attribute 'font-lock-function-name-face nil :foreground "black" :weight 'bold)
+(set-face-attribute 'font-lock-variable-name-face nil :foreground "black" :weight 'normal :underline "black")
+(set-face-attribute 'font-lock-comment-face nil :foreground "green4" :background "white")
+(set-face-attribute 'font-lock-preprocessor-face nil :weight 'bold :foreground "blue")
+(set-face-attribute 'font-lock-constant-face nil :foreground "black" :weight 'normal :underline "black")
+
+
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+
+(defun sh ()
+  (interactive)
+  (split-window-vertically)
+  (other-window 1)
+  (eshell))
+
+(defalias 'psh 'python-shell)
+
+;; set limit to 50 chars without warning when creating git commit msg
+(font-lock-add-keywords 'magit-log-edit-mode
+                        '(("\\`[^\n]\\{50\\}\\(.*\\)" 1 font-lock-warning-face)))
+(add-hook 'magit-log-edit-mode-hook 'font-lock-fontify-buffer)

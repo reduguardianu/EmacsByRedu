@@ -1,0 +1,9 @@
+#name : class ... { ... }
+# --
+class ${1:Name} {
+public:
+    explicit ${1:$(yas/substr text "[^: ]*")}($2);
+
+private:
+
+};

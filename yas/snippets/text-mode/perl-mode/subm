@@ -1,0 +1,5 @@
+#name : subm ... { ... }
+# --
+sub ${1:function_name} {
+    my ($self$0) = @_;
+}

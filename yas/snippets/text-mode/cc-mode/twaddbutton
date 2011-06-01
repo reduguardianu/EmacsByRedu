@@ -1,0 +1,3 @@
+TwAddButton(${1:BAR}, "${2:NAME}", ${3:CALLBACK}, ${4:this}, 
+           " label='$5' help='$6' ");
+$0
