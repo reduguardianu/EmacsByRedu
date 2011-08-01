@@ -16,11 +16,20 @@
 (add-to-list 'auto-mode-alist '("SConstruct" . python-mode))
 (add-to-list 'auto-mode-alist '("SConscript" . python-mode))
 
+;; (add-to-list
+;;    'load-path
+;;        (car (file-expand-wildcards "/opt/erlang/lib/erlang/lib/tools-*/emacs")))
+
+;; (setq erlang-root-dir "/opt/erlang/")
+;;       (setq exec-path (cons "/opt/erlang" exec-path))
+;;             (require 'erlang-start)
+
 ;; check os
 (setq mac (equal system-type 'darwin))
 (setq my-emacs-dir "~/dotemacs/")
 (when mac (load-file (concat my-emacs-dir "mac.el")))
 (load-file (concat my-emacs-dir "ecmascript-mode.el"))
+(load-file (concat my-emacs-dir "ani-fcsh.el"))
 
 
 ;; load modules
@@ -30,9 +39,11 @@
 (load-file (concat my-emacs-dir "erlang.el"))
 
 ;; set indentation
-(setq-default indent-tabs-mode nil)
-(setq tab-width 4)
 (add-hook 'c++-mode-hook (lambda () (c-set-style "stroustrup")))
+;; (setq c-default-style
+;;       '((c++-mode . "stroustrup"), (ecmascript-mode . "linux")))
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
 
 ;; higlight current line
 ;; http://emacs-fu.blogspot.com/2008/12/highlighting-current-line.html
@@ -298,9 +309,6 @@
 (font-lock-add-keywords 'magit-log-edit-mode
                         '(("\\`[^\n]\\{50\\}\\(.*\\)" 1 font-lock-warning-face)))
 (add-hook 'magit-log-edit-mode-hook 'font-lock-fontify-buffer)
-(add-to-list 'load-path (concat my-emacs-dir "distel/elisp"))
-(require 'distel)
-(distel-setup)
 
 ;; Move current line up and down
 (defun move-line (n)
@@ -328,3 +336,43 @@
 
 (global-set-key (kbd "M-<up>") 'move-line-up)
 (global-set-key (kbd "M-<down>") 'move-line-down)
+
+
+;;Smart go to beggining of line
+(defun smart-beginning-of-line ()
+  "Move point to first non-whitespace character or beginning-of-line.
+
+Move point to the first non-whitespace character on this line.
+If point was already at that position, move point to beginning of line."
+  (interactive)
+  (let ((oldpos (point)))
+    (back-to-indentation)
+    (and (= oldpos (point))
+         (beginning-of-line))))
+(global-set-key [home] 'smart-beginning-of-line)
+(global-set-key "\C-a" 'smart-beginning-of-line)
+
+;; flymake
+(defun my-flymake-show-next-error()
+  (interactive)
+  (flymake-goto-next-error)
+  (flymake-display-err-menu-for-current-line)
+  )
+(global-set-key "\C-c\C-v" 'my-flymake-show-next-error)
+
+;(global-set-key (kbd "C-SPC") (lambda () (interactive) (erl-complete "dev@marek-Ubuntu")))
+;; (global-set-key (kbd "C-SPC") 'set-mark-command) 
+;; ;; (defun marek-complete (node)
+;; ;;   (interactive)
+;; ;;   (erl-complete node))
+;; ;; (erl-complete "dev@marek-Ubuntu"))
+;; ;; (global-set-key (kbd "\C-c\C-x") )
+
+;; ;; (defalias 'erl-complete 'marek-complete)
+
+
+;; (global-set-key (kbd "\C-c\C-x") (lambda ()
+;;                                    (interactive)
+;;                                    (setq current-prefix-arg ())
+;;                                    (erl-complete)))
+;; (defalias 'x 'erl-complete)
