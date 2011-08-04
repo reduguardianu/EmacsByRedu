@@ -2,10 +2,7 @@
 (server-mode t)
 
 ;; set look&feel
-(setq default-frame-alist '((background-color . "white")
-			    (foreground-color . "black")
-			    (cursor-color     . "#6c6c6c")
-			    (font . "-*-Monaco-normal-r-*-*-17-102-120-120-c-*-iso8859-1")))
+(setq default-frame-alist '((font . "-*-Monaco-normal-r-*-*-17-102-120-120-c-*-iso8859-1")))
 
 ;; set major mode according to filename
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
@@ -47,7 +44,7 @@
 
 ;; higlight current line
 ;; http://emacs-fu.blogspot.com/2008/12/highlighting-current-line.html
-(defface hl-line '((t (:background "Gray")))
+(defface hl-line '((t (:background "#808069")))
   "Face to use for `hl-line-face'." :group 'hl-line)
 (setq hl-line-face 'hl-line)
 (global-hl-line-mode t) ; turn it on for all modes by default
@@ -376,3 +373,27 @@ If point was already at that position, move point to beginning of line."
 ;;                                    (setq current-prefix-arg ())
 ;;                                    (erl-complete)))
 ;; (defalias 'x 'erl-complete)
+(require 'color-theme)
+(color-theme-initialize)
+(load-file (concat my-emacs-dir "color-theme-blackboard.el"))
+(color-theme-blackboard)
+
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(font-lock-comment-face ((t (:foreground "green4" :slant italic))))
+ '(font-lock-constant-face ((t (:foreground "#4876FF" :underline "#4876FF" :weight normal))))
+ '(font-lock-function-name-face ((t (:foreground "#FFA500" :weight bold))))
+ '(font-lock-keyword-face ((t (:foreground "#8E388E" :weight bold))))
+ '(font-lock-variable-name-face ((t (:foreground "#00C957" :underline "#00C957" :weight normal))))
+ '(hl-line ((t (:background "#212121"))))
+ '(nxml-attribute-local-name ((t (:inherit font-lock-variable-name-face :foreground "green"))))
+ '(nxml-element-local-name ((t (:inherit font-lock-function-name-face :foreground "orange")))))
