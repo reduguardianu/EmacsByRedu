@@ -44,7 +44,7 @@
 
 ;; higlight current line
 ;; http://emacs-fu.blogspot.com/2008/12/highlighting-current-line.html
-(defface hl-line '((t (:background "#808069")))
+(defface hl-line '((t (:background "#404040")))
   "Face to use for `hl-line-face'." :group 'hl-line)
 (setq hl-line-face 'hl-line)
 (global-hl-line-mode t) ; turn it on for all modes by default
@@ -334,21 +334,6 @@
 (global-set-key (kbd "M-<up>") 'move-line-up)
 (global-set-key (kbd "M-<down>") 'move-line-down)
 
-
-;;Smart go to beggining of line
-(defun smart-beginning-of-line ()
-  "Move point to first non-whitespace character or beginning-of-line.
-
-Move point to the first non-whitespace character on this line.
-If point was already at that position, move point to beginning of line."
-  (interactive)
-  (let ((oldpos (point)))
-    (back-to-indentation)
-    (and (= oldpos (point))
-         (beginning-of-line))))
-(global-set-key [home] 'smart-beginning-of-line)
-(global-set-key "\C-a" 'smart-beginning-of-line)
-
 ;; flymake
 (defun my-flymake-show-next-error()
   (interactive)
@@ -356,7 +341,8 @@ If point was already at that position, move point to beginning of line."
   (flymake-display-err-menu-for-current-line)
   )
 (global-set-key "\C-c\C-v" 'my-flymake-show-next-error)
-
+(global-set-key "\C-ch" 'highlight-regexp)
+(global-set-key "\C-cu" 'unhighlight-regexp)
 ;(global-set-key (kbd "C-SPC") (lambda () (interactive) (erl-complete "dev@marek-Ubuntu")))
 ;; (global-set-key (kbd "C-SPC") 'set-mark-command) 
 ;; ;; (defun marek-complete (node)
@@ -378,22 +364,16 @@ If point was already at that position, move point to beginning of line."
 (load-file (concat my-emacs-dir "color-theme-blackboard.el"))
 (color-theme-blackboard)
 
-(custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- )
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(font-lock-comment-face ((t (:foreground "green4" :slant italic))))
- '(font-lock-constant-face ((t (:foreground "#4876FF" :underline "#4876FF" :weight normal))))
- '(font-lock-function-name-face ((t (:foreground "#FFA500" :weight bold))))
- '(font-lock-keyword-face ((t (:foreground "#8E388E" :weight bold))))
- '(font-lock-variable-name-face ((t (:foreground "#00C957" :underline "#00C957" :weight normal))))
- '(hl-line ((t (:background "#212121"))))
- '(nxml-attribute-local-name ((t (:inherit font-lock-variable-name-face :foreground "green"))))
- '(nxml-element-local-name ((t (:inherit font-lock-function-name-face :foreground "orange")))))
+(defun setup-look-n-feel()
+  (interactive)
+  (setq font-lock-comment-face '((t (:foreground "green4" :slant italic)))
+        font-lock-constant-face '((t (:foreground "#4876FF" :underline "#4876FF" :weight normal)))
+        font-lock-function-name-face '((t (:foreground "#FFA500" :weight bold)))
+        font-lock-keyword-face '((t (:foreground "#8E388E" :weight bold)))
+        font-lock-variable-name-face '((t (:foreground "#00C957" :underline "#00C957" :weight normal)))
+        hl-line '((t (:background "#212121")))
+        nxml-attribute-local-name '((t (:inherit font-lock-variable-name-face :foreground "green")))
+        font-lock-preprocessor-face '((t (:foreground "#00688B" :weight bold)))
+        nxml-element-local-name '((t (:inherit font-lock-function-name-face :foreground "orange"))))
+  )
+(setup-look-n-feel)
