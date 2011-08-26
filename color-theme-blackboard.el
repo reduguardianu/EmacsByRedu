@@ -45,7 +45,7 @@
 
      (font-lock-string-face ((t (:foreground "#61CE3C"))))
      (font-lock-type-face ((t (:foreground "#8DA6CE"))))
-     (font-lock-variable-name-face ((t (:foreground "#FF6400"))))
+     (font-lock-variable-name-face ((t (:foreground "#63B8FF"))))
      (font-lock-warning-face ((t (:bold t :foreground "Pink"))))
      (gui-element ((t (:background "#D4D0C8" :foreground "black"))))
      (region ((t (:background "#253B76"))))

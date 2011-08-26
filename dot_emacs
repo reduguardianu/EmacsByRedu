@@ -18,8 +18,11 @@
 ;;        (car (file-expand-wildcards "/opt/erlang/lib/erlang/lib/tools-*/emacs")))
 
 ;; (setq erlang-root-dir "/opt/erlang/")
-;;       (setq exec-path (cons "/opt/erlang" exec-path))
-;;             (require 'erlang-start)
+;; (setq exec-path (cons "/opt/erlang" exec-path))
+;; (require 'erlang-start)
+
+(setenv "PATH" (concat (getenv "PATH") ":/opt/erlang/bin"))
+(setq exec-path (append exec-path '("/opt/erlang/bin")))
 
 ;; check os
 (setq mac (equal system-type 'darwin))
@@ -280,16 +283,6 @@
       (indent-region sub-beg (point)))))
 
 
-(set-face-attribute 'font-lock-string-face nil :foreground "red")
-(set-face-attribute 'font-lock-keyword-face nil :weight 'bold :foreground "blue")
-(set-face-attribute 'font-lock-type-face nil :weight 'bold)
-(set-face-attribute 'font-lock-function-name-face nil :foreground "black" :weight 'bold)
-(set-face-attribute 'font-lock-variable-name-face nil :foreground "black" :weight 'normal :underline "black")
-(set-face-attribute 'font-lock-comment-face nil :foreground "green4" :background "white")
-(set-face-attribute 'font-lock-preprocessor-face nil :weight 'bold :foreground "blue")
-(set-face-attribute 'font-lock-constant-face nil :foreground "black" :weight 'normal :underline "black")
-
-
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
@@ -343,8 +336,12 @@
 (global-set-key "\C-c\C-v" 'my-flymake-show-next-error)
 (global-set-key "\C-ch" 'highlight-regexp)
 (global-set-key "\C-cu" 'unhighlight-regexp)
+;;Compile action script
+(global-set-key "\C-ca" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"src/Main.as\" \"/opt/flexsdk/bin/mxmlc -load-config build.xml src/Main.as\"")))
+;;Compile erlang
+(global-set-key "\C-ce" (lambda() (interactive) (compile "look-up-path-and-execute.pl Makefile make")))
 ;(global-set-key (kbd "C-SPC") (lambda () (interactive) (erl-complete "dev@marek-Ubuntu")))
-;; (global-set-key (kbd "C-SPC") 'set-mark-command) 
+;; (global-set-key (kbd "C-SPC") 'set-mark-command)
 ;; ;; (defun marek-complete (node)
 ;; ;;   (interactive)
 ;; ;;   (erl-complete node))
@@ -361,19 +358,5 @@
 ;; (defalias 'x 'erl-complete)
 (require 'color-theme)
 (color-theme-initialize)
-(load-file (concat my-emacs-dir "color-theme-blackboard.el"))
-(color-theme-blackboard)
-
-(defun setup-look-n-feel()
-  (interactive)
-  (setq font-lock-comment-face '((t (:foreground "green4" :slant italic)))
-        font-lock-constant-face '((t (:foreground "#4876FF" :underline "#4876FF" :weight normal)))
-        font-lock-function-name-face '((t (:foreground "#FFA500" :weight bold)))
-        font-lock-keyword-face '((t (:foreground "#8E388E" :weight bold)))
-        font-lock-variable-name-face '((t (:foreground "#00C957" :underline "#00C957" :weight normal)))
-        hl-line '((t (:background "#212121")))
-        nxml-attribute-local-name '((t (:inherit font-lock-variable-name-face :foreground "green")))
-        font-lock-preprocessor-face '((t (:foreground "#00688B" :weight bold)))
-        nxml-element-local-name '((t (:inherit font-lock-function-name-face :foreground "orange"))))
-  )
-(setup-look-n-feel)
+(load-file (concat my-emacs-dir "color-theme-dark-emacs.el"))
+(color-theme-dark-emacs)
