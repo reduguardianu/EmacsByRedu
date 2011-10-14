@@ -1,4 +1,4 @@
-; -*- emacs-lisp -*-
+;; -*- emacs-lisp -*-
 (server-mode t)
 
 ;; set look&feel
@@ -20,7 +20,7 @@
 ;; (setq erlang-root-dir "/opt/erlang/")
 ;; (setq exec-path (cons "/opt/erlang" exec-path))
 ;; (require 'erlang-start)
-
+(add-to-list 'load-path "~/dotemacs/mo-git-blame")
 (setenv "PATH" (concat (getenv "PATH") ":/opt/erlang/bin"))
 (setq exec-path (append exec-path '("/opt/erlang/bin")))
 
@@ -31,6 +31,8 @@
 (load-file (concat my-emacs-dir "ecmascript-mode.el"))
 (load-file (concat my-emacs-dir "ani-fcsh.el"))
 
+(autoload 'mo-git-blame-file "mo-git-blame" nil t)
+(autoload 'mo-git-blame-current "mo-git-blame" nil t)
 
 ;; load modules
 (setq modules-to-load (mapcar (lambda (module-name) (concat my-emacs-dir module-name))
@@ -40,8 +42,7 @@
 
 ;; set indentation
 (add-hook 'c++-mode-hook (lambda () (c-set-style "stroustrup")))
-;; (setq c-default-style
-;;       '((c++-mode . "stroustrup"), (ecmascript-mode . "linux")))
+(setq c-default-style "bsd" c-basic-offset 4)
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 
@@ -336,27 +337,21 @@
 (global-set-key "\C-c\C-v" 'my-flymake-show-next-error)
 (global-set-key "\C-ch" 'highlight-regexp)
 (global-set-key "\C-cu" 'unhighlight-regexp)
-;;Compile action script
-(global-set-key "\C-ca" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"src/Main.as\" \"/opt/flexsdk/bin/mxmlc -load-config build.xml src/Main.as\"")))
-;;Compile erlang
-(global-set-key "\C-ce" (lambda() (interactive) (compile "look-up-path-and-execute.pl Makefile make")))
-;(global-set-key (kbd "C-SPC") (lambda () (interactive) (erl-complete "dev@marek-Ubuntu")))
-;; (global-set-key (kbd "C-SPC") 'set-mark-command)
-;; ;; (defun marek-complete (node)
-;; ;;   (interactive)
-;; ;;   (erl-complete node))
-;; ;; (erl-complete "dev@marek-Ubuntu"))
-;; ;; (global-set-key (kbd "\C-c\C-x") )
 
-;; ;; (defalias 'erl-complete 'marek-complete)
-
-
-;; (global-set-key (kbd "\C-c\C-x") (lambda ()
-;;                                    (interactive)
-;;                                    (setq current-prefix-arg ())
-;;                                    (erl-complete)))
-;; (defalias 'x 'erl-complete)
 (require 'color-theme)
 (color-theme-initialize)
 (load-file (concat my-emacs-dir "color-theme-dark-emacs.el"))
 (color-theme-dark-emacs)
+
+
+;;                            GVR specific
+
+(global-set-key "\C-cr" (lambda() (interactive) (gud-gdb "gvr")))
+;;Compile action script
+(global-set-key "\C-ca" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"src/Main.as\" \"/opt/flexsdk/bin/mxmlc -load-config build.xml src/Main.as\"")))
+;;Compile erlang
+(global-set-key "\C-ce" (lambda() (interactive) (compile "look-up-path-and-execute.pl Makefile make")))
+;;Refresh Lockits
+(global-set-key "\C-cl" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"gvr/client/bin/content/languages\" update_lockits")))
+
+
