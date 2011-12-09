@@ -92,7 +92,7 @@ is visible for others"
                      "--target-groups=" quot post-review/groups quot eop
                      "--target-people=" quot people quot eop
                      "--branch=" quot (magit-get-current-branch) quot eop
-                     "--description=" quot description quot eop
+                     "--description=\"" description "\"" eop
                      "--summary=" quot summary quot eop
                      )))
     (let ((retmsg (shell-command-to-string cmd)))

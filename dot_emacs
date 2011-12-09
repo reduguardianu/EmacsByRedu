@@ -20,14 +20,15 @@
 ;; (setq erlang-root-dir "/opt/erlang/")
 ;; (setq exec-path (cons "/opt/erlang" exec-path))
 ;; (require 'erlang-start)
-(add-to-list 'load-path "~/dotemacs/mo-git-blame")
 (setenv "PATH" (concat (getenv "PATH") ":/opt/erlang/bin"))
 (setq exec-path (append exec-path '("/opt/erlang/bin")))
 
 ;; check os
 (setq mac (equal system-type 'darwin))
 (setq my-emacs-dir "~/dotemacs/")
+(add-to-list 'load-path (concat my-emacs-dir "mo-git-blame"))
 (when mac (load-file (concat my-emacs-dir "mac.el")))
+(load-file (concat my-emacs-dir "post_review.el"))
 (load-file (concat my-emacs-dir "ecmascript-mode.el"))
 (load-file (concat my-emacs-dir "ani-fcsh.el"))
 
@@ -59,6 +60,8 @@
 ;;                         lines-tail
                          trailing))
 (global-whitespace-mode t)
+
+(show-ws-toggle-show-trailing-whitespace)
 
 ;; git mode for Emacs
 (require 'magit)
@@ -347,11 +350,12 @@
 ;;                            GVR specific
 
 (global-set-key "\C-cr" (lambda() (interactive) (gud-gdb "gvr")))
+(global-set-key "\C-cp" (lambda() (interactive) (gud-gdb "execute /home/marek/Projekty/gvr/server/admin_panel/run_editor a")))
 ;;Compile action script
 (global-set-key "\C-ca" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"src/Main.as\" \"/opt/flexsdk/bin/mxmlc -load-config build.xml src/Main.as\"")))
 ;;Compile erlang
 (global-set-key "\C-ce" (lambda() (interactive) (compile "look-up-path-and-execute.pl Makefile make")))
 ;;Refresh Lockits
-(global-set-key "\C-cl" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"gvr/client/bin/content/languages\" update_lockits")))
+(global-set-key "\C-cl" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"gvr/static/content/languages\" update_lockits")))
 
 
