@@ -31,6 +31,7 @@
 (load-file (concat my-emacs-dir "post_review.el"))
 (load-file (concat my-emacs-dir "ecmascript-mode.el"))
 (load-file (concat my-emacs-dir "ani-fcsh.el"))
+(load-file (concat my-emacs-dir "as-trace.el"))
 
 (autoload 'mo-git-blame-file "mo-git-blame" nil t)
 (autoload 'mo-git-blame-current "mo-git-blame" nil t)
@@ -348,13 +349,13 @@
 
 
 ;;                            GVR specific
-
+(global-set-key "\C-ct" 'as-trace)
 (global-set-key "\C-cr" (lambda() (interactive) (gud-gdb "gvr")))
 (global-set-key "\C-cp" (lambda() (interactive) (gud-gdb "execute /home/marek/Projekty/gvr/server/admin_panel/run_editor a")))
 ;;Compile action script
 (global-set-key "\C-ca" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"src/Main.as\" \"/opt/flexsdk/bin/mxmlc -load-config build.xml src/Main.as\"")))
 ;;Compile erlang
-(global-set-key "\C-ce" (lambda() (interactive) (compile "look-up-path-and-execute.pl Makefile make")))
+(global-set-key "\C-ce" (lambda() (interactive) (compile "look-up-path-and-execute.pl Makefile \"make devel\"")))
 ;;Refresh Lockits
 (global-set-key "\C-cl" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"gvr/static/content/languages\" update_lockits")))
 
