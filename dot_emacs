@@ -349,9 +349,14 @@
 
 
 ;;                            GVR specific
+(global-set-key "\C-cv" (lambda()
+                          (interactive)
+                          (shell-command "tail -f /tmp/flashlogs&" "*AS3 trace*")
+                          )
+                )
 (global-set-key "\C-ct" 'as-trace)
 (global-set-key "\C-cr" (lambda() (interactive) (gud-gdb "gvr")))
-(global-set-key "\C-cp" (lambda() (interactive) (gud-gdb "execute /home/marek/Projekty/gvr/server/admin_panel/run_editor a")))
+(global-set-key "\C-cp" (lambda() (interactive) (shell-command "execute /home/marek/Projekty/gvr/server/admin_panel/run_editor a&" "*GvR editor*")))
 ;;Compile action script
 (global-set-key "\C-ca" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"src/Main.as\" \"/opt/flexsdk/bin/mxmlc -load-config build.xml src/Main.as\"")))
 ;;Compile erlang
