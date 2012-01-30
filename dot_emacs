@@ -25,14 +25,16 @@
 
 ;; check os
 (setq mac (equal system-type 'darwin))
-(setq my-emacs-dir "~/dotemacs/")
+(setq my-emacs-dir "~/.emacs_settings/")
 (add-to-list 'load-path (concat my-emacs-dir "mo-git-blame"))
+(add-to-list 'load-path my-emacs-dir)
 (when mac (load-file (concat my-emacs-dir "mac.el")))
 (load-file (concat my-emacs-dir "post_review.el"))
 (load-file (concat my-emacs-dir "actionscript-mode/actionscript-mode.el"))
 (load-file (concat my-emacs-dir "actionscript-mode/actionscript-config.el"))
 (load-file (concat my-emacs-dir "ani-fcsh.el"))
 (load-file (concat my-emacs-dir "as-trace.el"))
+(load-file (concat my-emacs-dir "show-wspace.el"))
 
 (autoload 'mo-git-blame-file "mo-git-blame" nil t)
 (autoload 'mo-git-blame-current "mo-git-blame" nil t)

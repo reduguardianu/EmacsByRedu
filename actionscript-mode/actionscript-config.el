@@ -131,7 +131,7 @@ with a directory named 'as' from which it builds package names."
 	(interactive)
 	(save-some-buffers)
   (let ((default-directory (or (upward-find-file "TAGS") ".")))
-    (shell-command (concat "find "
+    (message (concat "find "
                            (concat default-directory "/src")
                            " -name '*.as' -print | etags --language=none --regex="
                            "'/" as-function-re "/\\3/' -o "
