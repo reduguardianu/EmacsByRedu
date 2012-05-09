@@ -350,6 +350,12 @@
 (load-file (concat my-emacs-dir "color-theme-dark-emacs.el"))
 (color-theme-dark-emacs)
 
+(defun as3-outline()
+  (interactive)
+  (shell-command (concat "as3-outline " (buffer-file-name)) "*Outline*")
+  (other-window 1)
+  (grep-mode))
+
 
 ;;                            GVR specific
 (global-set-key "\C-cv" (lambda()
@@ -361,7 +367,7 @@
 (global-set-key "\C-cr" (lambda() (interactive) (gud-gdb "gvr")))
 (global-set-key "\C-cp" (lambda() (interactive) (shell-command "execute /home/marek/Projekty/gvr/server/admin_panel/run_editor a&" "*GvR editor*")))
 ;;Compile action script
-(global-set-key "\C-ca" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"src/Main.as\" \"/opt/flexsdk/bin/mxmlc -load-config build.xml src/Main.as\"")))
+(global-set-key "\C-ca" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"src/Main.as\" \"/opt/flexsdk/bin/mxmlc -load-config my_build.xml src/Main.as\"")))
 ;;Compile erlang
 (global-set-key "\C-ce" (lambda() (interactive) (compile "look-up-path-and-execute.pl Makefile \"make devel\"")))
 ;;Refresh Lockits
@@ -386,7 +392,7 @@
       ; If we're at / set top flag.
       (if (string= (expand-file-name dirname) "/")
 	  (setq top t))
-      
+
       ; Check for the file
       (if (file-exists-p (expand-file-name filename dirname))
 	  (setq found t)

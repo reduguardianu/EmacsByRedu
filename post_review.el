@@ -94,9 +94,6 @@ is visible for others"
                      "--branch=" quot (magit-get-current-branch) quot eop
                      "--description=\"" description "\"" eop
                      "--summary=" quot summary quot eop
+                     "--publish"
                      )))
-    (let ((retmsg (shell-command-to-string cmd)))
-      (string-match "\\(http://.*\\)\n" retmsg)
-      (message retmsg)
-      (message (match-string 1 retmsg))
-      (browse-url (match-string 1 retmsg)))))
+    (shell-command cmd)))
