@@ -58,7 +58,7 @@
 (setq hl-line-face 'hl-line)
 (global-hl-line-mode t) ; turn it on for all modes by default
 
-;; marek tabs, trailing whitespaces and too long lines
+;; mark tabs, trailing whitespaces and too long lines
 (require 'whitespace)
 (setq whitespace-style '(tabs
 ;;                         lines-tail
@@ -345,10 +345,11 @@
 (global-set-key "\C-ch" 'highlight-regexp)
 (global-set-key "\C-cu" 'unhighlight-regexp)
 
+(add-to-list 'custom-theme-load-path "~/.emacs_settings/emacs-color-theme-solarized")
 (require 'color-theme)
 (color-theme-initialize)
-(load-file (concat my-emacs-dir "color-theme-dark-emacs.el"))
-(color-theme-dark-emacs)
+(load-theme 'solarized-dark t)
+
 
 (defun as3-outline()
   (interactive)
