@@ -86,9 +86,8 @@
 (global-set-key (kbd "M-?") 'erl-complete)
 
 (show-paren-mode t)
-(menu-bar-mode nil)
-(unless (equal system-type 'darwin)
-  (tool-bar-mode nil))
+(menu-bar-mode -1)
+(tool-bar-mode -1)
 (transient-mark-mode t)
 (font-lock-mode t)
 (scroll-bar-mode -1)
@@ -359,21 +358,40 @@
 
 
 ;;                            GVR specific
+(defun debug-gvr()
+  (interactive)
+  (setq uri (concat "\"http://gc.games.csgbox.com:224/sandbox/?portal=12&partner=12&instance=10006&playerID=" player_id "&fluid=1&panel_visibility=0&friends_amount=0&portal_locale=pl&flash_wmode=direct&GCDM=1&developerInstance=38&editor=1\""))
+  (shell-command (concat "google-chrome " uri))
+  (gud-gdb "/home/marek/bin/run_fdb_and_wait")
+)
+
+(setq player_id "person.007")
 (global-set-key "\C-cv" (lambda()
                           (interactive)
                           (shell-command "tail -f /tmp/flashlogs&" "*AS3 trace*")
                           )
                 )
 (global-set-key "\C-ct" 'as-trace)
-(global-set-key "\C-cr" (lambda() (interactive) (gud-gdb "gvr")))
-(global-set-key "\C-cp" (lambda() (interactive) (shell-command "execute /home/marek/Projekty/gvr/server/admin_panel/run_editor a&" "*GvR editor*")))
+(global-set-key "\C-cr" (lambda() (interactive) (gud-gdb (concat "gvr " player_id))))
+(global-set-key "\C-cp" (lambda() (interactive) (shell-command "execute /home/marek/Projekty/gvr/server/tools/admin_panel/run_editor a&" "*GvR editor*")))
 ;;Compile action script
-(global-set-key "\C-ca" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"src/Main.as\" \"/opt/flexsdk/bin/mxmlc -load-config my_build.xml src/Main.as\"")))
+(global-set-key "\C-ca" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"src/Main.as\" \"/home/marek/Projekty/gvr/client/sdk/flex_air_sdk/bin/mxmlc -warnings=false -load-config my_build.xml src/Main.as\"")))
 ;;Compile erlang
-(global-set-key "\C-ce" (lambda() (interactive) (compile "look-up-path-and-execute.pl Makefile \"make devel\"")))
+(global-set-key "\C-ce" (lambda() (interactive) (compile "look-up-path-and-execute.pl Makefile \"make compile\"")))
 ;;Refresh Lockits
 (global-set-key "\C-cl" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"gvr/static/content/languages\" update_lockits")))
 
+;;
+;; ace jump mode major function
+;;
+(add-to-list 'load-path (concat my-emacs-dir "ace-jump-mode/"))
+(autoload
+  'ace-jump-mode
+  "ace-jump-mode"
+  "Emacs quick move minor mode"
+  t)
+;; you can select the key you prefer to
+(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
 
 (defun upward-find-file (filename &optional startdir)
   "Move up directories until we find a certain filename. If we
