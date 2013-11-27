@@ -1,6 +1,5 @@
 ;; -*- emacs-lisp -*-
 (server-mode t)
-
 ;; set look&feel
 (setq default-frame-alist '((font . "-*-Monaco-normal-r-*-*-17-102-120-120-c-*-iso8859-1")))
 
@@ -28,10 +27,12 @@
 (setq my-emacs-dir "~/.emacs_settings/")
 (add-to-list 'load-path (concat my-emacs-dir "mo-git-blame"))
 (add-to-list 'load-path my-emacs-dir)
+(add-to-list 'load-path (concat my-emacs-dir "jdee-2.4.1/lisp"))
 (when mac (load-file (concat my-emacs-dir "mac.el")))
 (load-file (concat my-emacs-dir "post_review.el"))
 (load-file (concat my-emacs-dir "actionscript-mode/actionscript-mode.el"))
 (load-file (concat my-emacs-dir "actionscript-mode/actionscript-config.el"))
+(load-file (concat my-emacs-dir "haxe-mode/haxe-mode.el"))
 (load-file (concat my-emacs-dir "ani-fcsh.el"))
 (load-file (concat my-emacs-dir "as-trace.el"))
 (load-file (concat my-emacs-dir "show-wspace.el"))
@@ -44,6 +45,8 @@
                               '("psvn" "yas" "magit" "json" "google-maps" "erlang-mode")))
 (setq load-path (append modules-to-load load-path))
 (load-file (concat my-emacs-dir "erlang.el"))
+(load "jde")
+(add-to-list 'compilation-error-regexp-alist '("\\(.*\\):\\([0-9]+\\) Error.*" 1 2))
 
 ;; set indentation
 (add-hook 'c++-mode-hook (lambda () (c-set-style "stroustrup")))
@@ -372,14 +375,11 @@
                           )
                 )
 (global-set-key "\C-ct" 'as-trace)
-(global-set-key "\C-cr" (lambda() (interactive) (gud-gdb (concat "gvr " player_id))))
+(global-set-key "\C-cr" (lambda() (interactive) (shell-command "cd /home/marek//workspace/kleszcze_z_klanu/client/static && /home/marek/Downloads/flashplayerdebugger Tribal.swf&")))
 (global-set-key "\C-cp" (lambda() (interactive) (shell-command "execute /home/marek/Projekty/gvr/server/tools/admin_panel/run_editor a&" "*GvR editor*")))
 ;;Compile action script
 (global-set-key "\C-ca" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"src/Main.as\" \"/home/marek/Projekty/gvr/client/sdk/flex_air_sdk/bin/mxmlc -warnings=false -load-config my_build.xml src/Main.as\"")))
-;;Compile erlang
-(global-set-key "\C-ce" (lambda() (interactive) (compile "look-up-path-and-execute.pl Makefile \"make compile\"")))
-;;Refresh Lockits
-(global-set-key "\C-cl" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"gvr/static/content/languages\" update_lockits")))
+(global-set-key "\C-cl" (lambda() (interactive) (async-shell-command "tail -f ~/.macromedia/Flash_Player/Logs/flashlog.txt") (rename-buffer "*AS3 Logs*")))
 
 ;;
 ;; ace jump mode major function
