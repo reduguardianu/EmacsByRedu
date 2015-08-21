@@ -5,12 +5,8 @@
 
 ;; set major mode according to filename
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
-(add-to-list 'auto-mode-alist '("\\.h\\'"   . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.hpp\\'" . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.show\\'" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.as\\'" . actionscript-mode))
-(add-to-list 'auto-mode-alist '("SConstruct" . python-mode))
-(add-to-list 'auto-mode-alist '("SConscript" . python-mode))
 
 ;; (add-to-list
 ;;    'load-path
@@ -19,38 +15,42 @@
 ;; (setq erlang-root-dir "/opt/erlang/")
 ;; (setq exec-path (cons "/opt/erlang" exec-path))
 ;; (require 'erlang-start)
-(setenv "PATH" (concat (getenv "PATH") ":/opt/erlang/bin"))
-(setq exec-path (append exec-path '("/opt/erlang/bin")))
+(setenv "PATH" (concat "/Users/marek/bin/:" (getenv "PATH")))
+(setq exec-path (append exec-path '("/Users/marek/bin/")))
 
 ;; check os
 (setq mac (equal system-type 'darwin))
 (setq my-emacs-dir "~/.emacs_settings/")
 (add-to-list 'load-path (concat my-emacs-dir "mo-git-blame"))
 (add-to-list 'load-path my-emacs-dir)
-(add-to-list 'load-path (concat my-emacs-dir "jdee-2.4.1/lisp"))
-(when mac (load-file (concat my-emacs-dir "mac.el")))
-(load-file (concat my-emacs-dir "post_review.el"))
-(load-file (concat my-emacs-dir "actionscript-mode/actionscript-mode.el"))
-(load-file (concat my-emacs-dir "actionscript-mode/actionscript-config.el"))
-(load-file (concat my-emacs-dir "haxe-mode/haxe-mode.el"))
-(load-file (concat my-emacs-dir "ani-fcsh.el"))
-(load-file (concat my-emacs-dir "as-trace.el"))
-(load-file (concat my-emacs-dir "show-wspace.el"))
+(load-file (concat my-emacs-dir "show_tracker_helper.el"))
+(load-file (concat my-emacs-dir "php-mode/php-mode.el"))
 
 (autoload 'mo-git-blame-file "mo-git-blame" nil t)
 (autoload 'mo-git-blame-current "mo-git-blame" nil t)
 
-;; load modules
-(setq modules-to-load (mapcar (lambda (module-name) (concat my-emacs-dir module-name))
-                              '("psvn" "yas" "magit" "json" "google-maps" "erlang-mode")))
-(setq load-path (append modules-to-load load-path))
-(load-file (concat my-emacs-dir "erlang.el"))
-(load "jde")
-(add-to-list 'compilation-error-regexp-alist '("\\(.*\\):\\([0-9]+\\) Error.*" 1 2))
+(add-hook 'actionscript-mode-hook 'subword-mode)
+
+(add-to-list 'compilation-error-regexp-alist '("\\(.*\\):\\([0-9]+\\).*Error.*" 1 2))
+(add-to-list 'compilation-error-regexp-alist '("\\(.*\\):\\([0-9]+\\).*Syntax error.*" 1 2))
+(add-to-list 'compilation-error-regexp-alist '("\\(.*\\):\\([0-9]+\\).*Warning.*" 1 2))
+
+(add-hook 'before-save-hook (lambda()
+                              (delete-trailing-whitespace)
+                              (set-buffer-file-coding-system 'utf-8-dos t)
+                              (set-buffer-file-coding-system 'utf-8-unix t)
+                              (save-excursion
+                                (goto-char (point-min))
+                                (replace-string "" "")
+                                (goto-char (point-max))
+                                (if (not (equal (thing-at-point 'whitespace) "\n"))
+                                    (insert "\n")
+                                  )
+                                )
+                              )
+          )
 
 ;; set indentation
-(add-hook 'c++-mode-hook (lambda () (c-set-style "stroustrup")))
-(setq c-default-style "bsd" c-basic-offset 4)
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 
@@ -70,23 +70,7 @@
 
 (show-ws-toggle-show-trailing-whitespace)
 
-;; git mode for Emacs
-(require 'magit)
-(global-set-key [f11] 'magit-status)
-
-(require 'yasnippet)
-(yas/initialize)
-(yas/load-directory (concat my-emacs-dir "yas/snippets"))
-
-(global-set-key [f2] 'new-frame)
-(global-set-key [f7] (lambda () (interactive) (find-file "~/.emacs")))
-(global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x t") 'toggle-truncate-lines)
-
-(defun other-window-backward () (interactive) (other-window -1))
-(global-set-key (kbd "C-,") 'other-window-backward)
-(global-set-key (kbd "C-.") 'other-window)
-(global-set-key (kbd "M-?") 'erl-complete)
 
 (show-paren-mode t)
 (menu-bar-mode -1)
@@ -106,7 +90,7 @@
 (setq ido-enable-flex-matching t) ;; fuzzy matching
 
 (setq x-select-enable-clipboard t)
-(setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
+(setq interprogram-paste-function 'x-selection-value)
 
 (global-set-key (kbd "M-n") 'next-error)
 (global-set-key (kbd "M-p") 'previous-error)
@@ -117,85 +101,7 @@
 (put 'scroll-left 'disabled nil)
 (put 'erase-buffer 'disabled nil)
 
-(defun lmm-create-tags ()
-  (interactive)
-  (let ((command (cond ((string-equal major-mode "perl-mode") "etags *")
-		       ((or (string-equal major-mode "c-mode")
-			    (string-equal major-mode "c++-mode")) "etags *.cpp *.h")
-		       ((string-equal major-mode "erlang-mode") "etags *.erl"))))
-    (shell-command command)))
-(global-set-key [f9] 'lmm-create-tags)
-
-
-(defun lmm-kill-debug-buffer-if-exists ()
-  "Kill the buffer if already exists (stop debugging)"
-  (let* ((script-buffer-name (buffer-name))
-         (debug-buffer-name (concat "*gud-" script-buffer-name "*"))
-         (buffer (get-buffer debug-buffer-name)))
-    (if buffer
-        (progn
-          (switch-to-buffer script-buffer-name)
-          (delete-other-windows)
-          (kill-buffer buffer)))))
-
-(defun lmm-run-perldb ()
-  "Runs perl debugger for current buffer"
-  (perldb (concat "perl -d " (buffer-file-name))))
-
-(defun lmm-run-perldb-stop-current-line ()
-  "Run perl debubbuger for current buffer and stop at current line"
-  (let ((line-no (int-to-string (line-number-at-pos))))
-    (lmm-run-perldb)
-    (insert (concat "c " line-no))))
-
-(global-set-key [f8] (lambda ()
-                       (interactive)
-                       (lmm-kill-debug-buffer-if-exists)
-                       (lmm-run-perldb-stop-current-line)))
-
-(defun lmm-sub-args ()
-  (interactive)
-  (re-search-backward "sub\\(.*\\){" nil t)
-  (let ((fun-name (match-string 1)))
-    (next-line)
-    (beginning-of-line)
-    (re-search-forward "my\s*(")
-    (let ((vars-list ())
-          (bound (save-excursion (end-of-line) (point))))
-      (while (re-search-forward ".*?$\\(.*?\\)[,)]" bound t)
-        (add-to-list 'vars-list (match-string 1)))
-      (setq vars-list (reverse vars-list))
-      (end-of-line)
-      (insert "\n")
-      (while (car vars-list)
-        (insert (concat "die " "\"" (car vars-list)  " must be defined in [" fun-name  "]\\n\" " "unless defined $" (car vars-list) ";\n"))
-        (setq vars-list (cdr vars-list))))
-    (let ((sub-beg (save-excursion (search-backward "sub") (point))))
-      (indent-region sub-beg (point)))))
-
-
-(global-set-key [(f4)] (lambda () (interactive)
-                         (if (equal (buffer-name) "*eshell*")
-                             (delete-window)
-                           (progn
-                             (select-window (split-window))
-                             (eshell)))))
-
-(global-set-key [(shift f4)] (lambda () (interactive)
-                               (if (equal (buffer-name (window-buffer (other-window 1))) "*eshell*")
-                                   (delete-window)gdb-display-breakpoints-buffer
-                                 (progn
-                                   (let ((start-window (selected-window)))
-                                     (select-window (split-window))
-                                     (eshell)
-                                     (select-window start-window))))))
-
-(defun lmm-compile ()
-  ""
-  (interactive)
-  (compile "time scons -QD -j 2 -k"))
-(global-set-key (kbd "C-c c") #'lmm-compile)
-(global-set-key (kbd "C-c v") #'compile)
+(global-set-key (kbd "C-x g") #'magit-status)
 
 
 
@@ -242,55 +148,6 @@
       (global-set-key (kbd "<down>")'next-line)
       (setq toggled-arrow-keys t))))
 (toggle-arrow-keys)
-
-
-(defun erlang-insert-edoc ()
-  "Insert edoc."
-  (interactive)
-  (save-excursion
-    (when (re-search-forward "^\\s *-spec\\s +\\([a-zA-Z0-9_]+\\)\\s *(\\(\\(.\\|\n\\)*?\\))\\s *->[ \t\n]*\\(.+?\\)\\." nil t)
-      (let* ((beg (match-beginning 0))
-             (funcname (match-string-no-properties 1))
-             (arg-string (match-string-no-properties 2))
-             (retval (match-string-no-properties 4))
-             (args (split-string arg-string "[ \t\n,]" t)))
-        (when (re-search-forward (concat "^\\s *" funcname "\\s *(\\(\\(.\\|\n\\)*?\\))\\s *->") nil t)
-          (let ((arg-types (split-string (match-string-no-properties 1) "[ \t\n,]" t)))
-            (goto-char beg)
-            (insert "%%-----------------------------------------------------------------------------\n")
-            (insert "%% @doc\n")
-            (insert "%% Your description goes here\n")
-            (insert "%% @spec " funcname "(")
-            (dolist (arg args)
-              (insert (car arg-types) "::" arg)
-              (setq arg-types (cdr arg-types))
-              (when arg-types
-                (insert ", ")))
-            (insert ") ->\n")
-            (insert "%%       " retval "\n")
-            (insert "%% @end\n")
-            (insert "%%-----------------------------------------------------------------------------\n")))))))
-
-
-(defun lmm-sub-args ()
-  (interactive)
-  (re-search-backward "sub\\(.*\\){" nil t)
-  (let ((fun-name (match-string 1)))
-    (next-line)
-    (beginning-of-line)
-    (re-search-forward "my\s*(")
-    (let ((vars-list ())
-          (bound (save-excursion (end-of-line) (point))))
-      (while (re-search-forward ".*?$\\(.*?\\)[,)]" bound t)
-        (add-to-list 'vars-list (match-string 1)))
-      (setq vars-list (reverse vars-list))
-      (end-of-line)
-      (insert "\n")
-      (while (car vars-list)
-        (insert (concat "die " "\"" (car vars-list)  " must be defined in [" fun-name  "]\\n\" " "unless defined $" (car vars-list) ";\n"))
-        (setq vars-list (cdr vars-list))))
-    (let ((sub-beg (save-excursion (search-backward "sub") (point))))
-      (indent-region sub-beg (point)))))
 
 
 (set-terminal-coding-system 'utf-8)
@@ -347,10 +204,10 @@
 (global-set-key "\C-ch" 'highlight-regexp)
 (global-set-key "\C-cu" 'unhighlight-regexp)
 
-(add-to-list 'custom-theme-load-path "~/.emacs_settings/emacs-color-theme-solarized")
+(add-to-list 'custom-theme-load-path "~/.emacs_settings/themes")
 (require 'color-theme)
 (color-theme-initialize)
-(load-theme 'solarized-dark t)
+(load-theme 'ample t)
 
 
 (defun as3-outline()
@@ -360,26 +217,25 @@
   (grep-mode))
 
 
-;;                            GVR specific
-(defun debug-gvr()
+(defun run-game(game)
   (interactive)
-  (setq uri (concat "\"http://gc.games.csgbox.com:224/sandbox/?portal=12&partner=12&instance=10006&playerID=" player_id "&fluid=1&panel_visibility=0&friends_amount=0&portal_locale=pl&flash_wmode=direct&GCDM=1&developerInstance=38&editor=1\""))
-  (shell-command (concat "google-chrome " uri))
-  (gud-gdb "/home/marek/bin/run_fdb_and_wait")
+  (if (get-buffer "*Async Shell Command*")
+      (kill-buffer "*Async Shell Command*")
+    )
+  (async-shell-command game)
 )
-
-(setq player_id "person.007")
+(global-set-key "\C-ct" 'as-trace)
 (global-set-key "\C-cv" (lambda()
                           (interactive)
                           (shell-command "tail -f /tmp/flashlogs&" "*AS3 trace*")
                           )
                 )
-(global-set-key "\C-ct" 'as-trace)
-(global-set-key "\C-cr" (lambda() (interactive) (shell-command "cd /home/marek//workspace/kleszcze_z_klanu/client/static && /home/marek/Downloads/flashplayerdebugger Tribal.swf&")))
-(global-set-key "\C-cp" (lambda() (interactive) (shell-command "execute /home/marek/Projekty/gvr/server/tools/admin_panel/run_editor a&" "*GvR editor*")))
+(global-set-key "\C-cr" (lambda() (interactive) (run-game "run_tribal")))
 ;;Compile action script
-(global-set-key "\C-ca" (lambda() (interactive) (compile "look-up-path-and-execute.pl \"src/Main.as\" \"/home/marek/Projekty/gvr/client/sdk/flex_air_sdk/bin/mxmlc -warnings=false -load-config my_build.xml src/Main.as\"")))
+(global-set-key "\C-ca" (lambda() (interactive) (compile "compile-tribal")))
+(global-set-key "\C-cj" (lambda() (interactive) (compile "cd ~/Projects/kleszcze_z_klanu/tribes-server&&mvn compile")))
 (global-set-key "\C-cl" (lambda() (interactive) (async-shell-command "tail -f ~/.macromedia/Flash_Player/Logs/flashlog.txt") (rename-buffer "*AS3 Logs*")))
+(global-set-key "\C-ce" (lambda() (interactive) (async-shell-command (concat eclipse-path "eclipse -vmargs -Xms256m -Xmx1024m -XgcPrio:deterministic") "*Eclipse*")))
 
 ;;
 ;; ace jump mode major function
@@ -392,6 +248,25 @@
   t)
 ;; you can select the key you prefer to
 (define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+(defun go-to-as3-error ()
+  (interactive)
+  (setq line-num 0)
+  (setq file-name nil)
+  (save-excursion
+    (beginning-of-line)
+    (search-forward-regexp "\\[.*:")
+    (if (looking-at "[0-9]+")
+        (setq line-num (string-to-number (buffer-substring (match-beginning 0) (match-end 0))))
+      )
+    (search-backward "[")
+    (forward-char)
+    (setq file-name (ffap-guesser))
+    )
+  (find-file file-name)
+  (if (not (equal line-num 0))
+      (goto-line line-num))
+)
+(global-set-key "\C-cg" 'go-to-as3-error)
 
 (defun upward-find-file (filename &optional startdir)
   "Move up directories until we find a certain filename. If we
@@ -419,3 +294,26 @@
 	(setq dirname (expand-file-name ".." dirname))))
     ; return statement
     (if found dirname nil)))
+(global-wakatime-mode)
+
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.org/packages/") t)
+(when (< emacs-major-version 24)
+  ;; For important compatibility libraries like cl-lib
+  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+(package-initialize)
+
+(global-set-key (kbd "s-SPC") 'omnisharp-auto-complete)
+;; (global-set-key (kbd "s-SPC") 'auto-complete)
+
+;; (require 'eclim)
+;; (global-eclim-mode)
+;; ;; regular auto-complete initialization
+;; (require 'auto-complete-config)
+;; (ac-config-default)
+;; (require 'ac-emacs-eclim-source)
+;; (ac-emacs-eclim-config)
+;; (setq eclim-executable "/opt/eclipse/eclim")
+(fset 'fix_unity_setup
+   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([24 6 99 115 112 return 134217848 114 101 112 108 97 99 101 115 45 backspace backspace 45 115 116 114 105 110 103 return 90 76 backspace 58 return return 24 19 24 6 99 115 112 116 111 106 return 134217848 up return return 24 19 24 6 99 115 112 114 111 106 return 134217848 up return return 24 19 24 6 99 115 112 114 111 106 return 134217848 up return return 24 19 24 107 return 24 107 return 24 107 return 24 107 return] 0 "%d")) arg)))

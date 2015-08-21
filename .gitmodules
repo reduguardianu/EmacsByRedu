@@ -4,3 +4,6 @@
 [submodule "ace-jump-mode"]
 	path = ace-jump-mode
 	url = https://github.com/winterTTr/ace-jump-mode.git
+[submodule "emacs-jabber"]
+	path = emacs-jabber
+	url = git://catap.ru/emacs-jabber/emacs-jabber.git
