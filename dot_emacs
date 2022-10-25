@@ -1,52 +1,39 @@
 ;; -*- emacs-lisp -*-
 (server-mode t)
 ;; set look&feel
-(setq default-frame-alist '((font . "-*-Monaco-normal-r-*-*-17-102-120-120-c-*-iso8859-1")))
+;; (setq default-frame-alist '((font . "-*-Inconsolata-normal-r-*-*-17-102-120-120-c-*-iso8859-1")))
 
 ;; set major mode according to filename
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.show\\'" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.as\\'" . actionscript-mode))
+(add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
 
-;; (add-to-list
-;;    'load-path
-;;        (car (file-expand-wildcards "/opt/erlang/lib/erlang/lib/tools-*/emacs")))
-
-;; (setq erlang-root-dir "/opt/erlang/")
-;; (setq exec-path (cons "/opt/erlang" exec-path))
-;; (require 'erlang-start)
-(setenv "PATH" (concat "/Users/marek/bin/:" (getenv "PATH")))
-(setq exec-path (append exec-path '("/Users/marek/bin/")))
+(setenv "ESHELL" "/usr/bin/zsh")
 
 ;; check os
-(setq mac (equal system-type 'darwin))
 (setq my-emacs-dir "~/.emacs_settings/")
 (add-to-list 'load-path (concat my-emacs-dir "mo-git-blame"))
+(add-to-list 'load-path (concat my-emacs-dir "gnome-shell-mode/" "local/" "gnome-shell-mode"))
+(add-to-list 'load-path (concat my-emacs-dir "gnome-shell-mode/" "local/" "company-gnome-shell"))
 (add-to-list 'load-path my-emacs-dir)
-(load-file (concat my-emacs-dir "show_tracker_helper.el"))
-(load-file (concat my-emacs-dir "php-mode/php-mode.el"))
 
 (autoload 'mo-git-blame-file "mo-git-blame" nil t)
 (autoload 'mo-git-blame-current "mo-git-blame" nil t)
 
-(add-hook 'actionscript-mode-hook 'subword-mode)
-
-(add-to-list 'compilation-error-regexp-alist '("\\(.*\\):\\([0-9]+\\).*Error.*" 1 2))
-(add-to-list 'compilation-error-regexp-alist '("\\(.*\\):\\([0-9]+\\).*Syntax error.*" 1 2))
-(add-to-list 'compilation-error-regexp-alist '("\\(.*\\):\\([0-9]+\\).*Warning.*" 1 2))
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:complete-on-dot t)
 
 (add-hook 'before-save-hook (lambda()
                               (delete-trailing-whitespace)
-                              (set-buffer-file-coding-system 'utf-8-dos t)
-                              (set-buffer-file-coding-system 'utf-8-unix t)
-                              (save-excursion
-                                (goto-char (point-min))
-                                (replace-string "" "")
-                                (goto-char (point-max))
-                                (if (not (equal (thing-at-point 'whitespace) "\n"))
-                                    (insert "\n")
-                                  )
-                                )
+                              ;; (save-excursion
+                              ;;   (goto-char (point-min))
+                              ;;   (replace-string "" "")
+                              ;;   (goto-char (point-max))
+                              ;;   (if (not (equal (thing-at-point 'whitespace) "\n"))
+                              ;;       (insert "\n")
+                              ;;     )
+                              ;;   )
                               )
           )
 
@@ -67,8 +54,6 @@
 ;;                         lines-tail
                          trailing))
 (global-whitespace-mode t)
-
-(show-ws-toggle-show-trailing-whitespace)
 
 (global-set-key (kbd "C-x t") 'toggle-truncate-lines)
 
@@ -133,7 +118,7 @@
 					 (interactive "p")
 					 (if n
 					     (other-window (- n))
-					   (other-window -1))))3
+					   (other-window -1))))
 
 	(global-set-key (kbd "<right>") (lambda (&optional n)
 					  (interactive "p")
@@ -194,49 +179,6 @@
 (global-set-key (kbd "M-<up>") 'move-line-up)
 (global-set-key (kbd "M-<down>") 'move-line-down)
 
-;; flymake
-(defun my-flymake-show-next-error()
-  (interactive)
-  (flymake-goto-next-error)
-  (flymake-display-err-menu-for-current-line)
-  )
-(global-set-key "\C-c\C-v" 'my-flymake-show-next-error)
-(global-set-key "\C-ch" 'highlight-regexp)
-(global-set-key "\C-cu" 'unhighlight-regexp)
-
-(add-to-list 'custom-theme-load-path "~/.emacs_settings/themes")
-(require 'color-theme)
-(color-theme-initialize)
-(load-theme 'ample t)
-
-
-(defun as3-outline()
-  (interactive)
-  (shell-command (concat "as3-outline " (buffer-file-name)) "*Outline*")
-  (other-window 1)
-  (grep-mode))
-
-
-(defun run-game(game)
-  (interactive)
-  (if (get-buffer "*Async Shell Command*")
-      (kill-buffer "*Async Shell Command*")
-    )
-  (async-shell-command game)
-)
-(global-set-key "\C-ct" 'as-trace)
-(global-set-key "\C-cv" (lambda()
-                          (interactive)
-                          (shell-command "tail -f /tmp/flashlogs&" "*AS3 trace*")
-                          )
-                )
-(global-set-key "\C-cr" (lambda() (interactive) (run-game "run_tribal")))
-;;Compile action script
-(global-set-key "\C-ca" (lambda() (interactive) (compile "compile-tribal")))
-(global-set-key "\C-cj" (lambda() (interactive) (compile "cd ~/Projects/kleszcze_z_klanu/tribes-server&&mvn compile")))
-(global-set-key "\C-cl" (lambda() (interactive) (async-shell-command "tail -f ~/.macromedia/Flash_Player/Logs/flashlog.txt") (rename-buffer "*AS3 Logs*")))
-(global-set-key "\C-ce" (lambda() (interactive) (async-shell-command (concat eclipse-path "eclipse -vmargs -Xms256m -Xmx1024m -XgcPrio:deterministic") "*Eclipse*")))
-
 ;;
 ;; ace jump mode major function
 ;;
@@ -294,7 +236,6 @@
 	(setq dirname (expand-file-name ".." dirname))))
     ; return statement
     (if found dirname nil)))
-(global-wakatime-mode)
 
 (require 'package)
 (add-to-list 'package-archives
@@ -302,7 +243,6 @@
 (when (< emacs-major-version 24)
   ;; For important compatibility libraries like cl-lib
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
-(package-initialize)
 
 (global-set-key (kbd "s-SPC") 'omnisharp-auto-complete)
 ;; (global-set-key (kbd "s-SPC") 'auto-complete)
@@ -315,5 +255,25 @@
 ;; (require 'ac-emacs-eclim-source)
 ;; (ac-emacs-eclim-config)
 ;; (setq eclim-executable "/opt/eclipse/eclim")
-(fset 'fix_unity_setup
-   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([24 6 99 115 112 return 134217848 114 101 112 108 97 99 101 115 45 backspace backspace 45 115 116 114 105 110 103 return 90 76 backspace 58 return return 24 19 24 6 99 115 112 116 111 106 return 134217848 up return return 24 19 24 6 99 115 112 114 111 106 return 134217848 up return return 24 19 24 6 99 115 112 114 111 106 return 134217848 up return return 24 19 24 107 return 24 107 return 24 107 return 24 107 return] 0 "%d")) arg)))
+
+ ;;pdb setup, note the python version
+ (setq pdb-path '/usr/lib/python2.7/pdb.py
+       gud-pdb-command-name (symbol-name pdb-path))
+ (defadvice pdb (before gud-query-cmdline activate)
+   "Provide a better default command line when called interactively."
+   (interactive
+    (list (gud-query-cmdline pdb-path
+                             (file-name-nondirectory buffer-file-name)))))
+
+(add-to-list 'custom-theme-load-path "~/.emacs_settings/themes")
+(require 'color-theme)
+(color-theme-initialize)
+(load-theme 'ample t)
+(set-mouse-color "white")
+
+(defun beautify-json ()
+  (interactive)
+  (let ((b (if mark-active (min (point) (mark)) (point-min)))
+        (e (if mark-active (max (point) (mark)) (point-max))))
+    (shell-command-on-region b e
+     "python -mjson.tool" (current-buffer) t)))
