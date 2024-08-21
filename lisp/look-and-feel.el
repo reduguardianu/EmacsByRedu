@@ -28,8 +28,10 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 (setq confirm-kill-emacs 'yes-or-no-p)
 
-(ido-mode t)
-(setq ido-enable-flex-matching t) ;; fuzzy matching
+(ivy-mode t)
+(setq ivy-re-builders-alist
+      '((t . ivy--regex-fuzzy)))
+
 
 (setq x-select-enable-clipboard t)
 (setq interprogram-paste-function 'x-selection-value)
