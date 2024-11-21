@@ -49,6 +49,18 @@
                         (projects  . 5)
                         (agenda    . 5)))
 
+
+  (setq lombok-library-path (concat my-emacs-dir "java-lsp/" "lombok.jar"))
+
+  (unless (file-exists-p lombok-library-path)
+    (url-copy-file "https://projectlombok.org/downloads/lombok.jar" lombok-library-path))
+
+  (setq lsp-java-vmargs '("-XX:+UseParallelGC" "-XX:GCTimeRatio=4" "-XX:AdaptiveSizePolicyWeight=90" "-Dsun.zip.disableMemoryMapping=true" "-Xmx4G" "-Xms100m"))
+
+  (push (concat "-javaagent:"
+                  (expand-file-name lombok-library-path))
+          lsp-java-vmargs)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -64,3 +76,4 @@
  )
 (require 'lsp-java)
 (add-hook 'java-mode-hook #'lsp)
+(setq visible-bell t)

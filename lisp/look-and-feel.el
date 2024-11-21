@@ -29,8 +29,8 @@
 (setq confirm-kill-emacs 'yes-or-no-p)
 
 (ivy-mode t)
-(setq ivy-re-builders-alist
-      '((t . ivy--regex-fuzzy)))
+;; (setq ivy-re-builders-alist
+;;       '((t . ivy--regex-fuzzy)))
 
 
 (setq x-select-enable-clipboard t)
