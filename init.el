@@ -67,7 +67,14 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(company lsp-java helpful swiper dashboard all-the-icons nerd-icons page-break-lines projectile yasnippet ivy projectile qml-mode docker-compose-mode dockerfile-mode json-mode s "s" groovy-mode python-mode jedi flycheck-plantuml xclip typescript-mode lua-mode ein xml+ whitespace-cleanup-mode realgud protobuf-mode php-mode php+-mode magit color-theme ample-zen-theme ample-theme ac-anaconda)))
+   '(ac-anaconda all-the-icons ample-theme ample-zen-theme color-theme
+                 company dashboard docker-compose-mode dockerfile-mode
+                 ein flycheck-plantuml groovy-mode helpful ivy jedi
+                 json-mode logview lsp-java lua-mode magit nerd-icons
+                 page-break-lines php+-mode php-mode projectile
+                 projectile protobuf-mode python-mode qml-mode realgud
+                 s "s" swiper typescript-mode whitespace-cleanup-mode
+                 xclip xml+ yasnippet)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
