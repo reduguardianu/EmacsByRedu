@@ -39,4 +39,7 @@
     (shell-command-on-region b e
      "python -mjson.tool" (current-buffer) t)))
 (defalias 'fc-update-proto
-   (kmacro "C-s p r o t o V e r s <return> C-s > <return> C-y C-SPC C-s < <return> C-b C-w C-x C-s"))
+  (kmacro "C-s p r o t o V e r s <return> C-s > <return> C-y C-SPC C-s < <return> C-b C-w C-x C-s"))
+
+(defalias 'th-update-proto
+   (kmacro "C-s h n - p r o t o <return> C-s > <return> C-y SPC C-n C-r > <return> C-f C-y C-SPC C-s S N A P S H <return> M-b C-b C-w C-p C-SPC C-s - S N A P S <return> M-b C-b C-w C-x C-s"))

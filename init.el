@@ -67,14 +67,14 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(ac-anaconda all-the-icons ample-theme ample-zen-theme color-theme
-                 company dashboard docker-compose-mode dockerfile-mode
-                 ein flycheck-plantuml groovy-mode helpful ivy jedi
-                 json-mode logview lsp-java lua-mode magit nerd-icons
-                 page-break-lines php+-mode php-mode projectile
-                 projectile protobuf-mode python-mode qml-mode realgud
-                 s "s" swiper typescript-mode whitespace-cleanup-mode
-                 xclip xml+ yasnippet)))
+   '(all-the-icons ample-theme company dashboard docker-compose-mode
+                   dockerfile-mode helpful jedi json-mode logview
+                   lsp-java lsp-pyright lua-mode magit nerd-icons
+                   page-break-lines projectile protobuf-mode
+                   pyenv-mode pyvenv qml-mode rg sqlformat swiper
+                   toc-org transient transient-posframe
+                   typescript-mode yasnippet))
+ '(safe-local-variable-directories '("/home/marek/Projects/TrophyHunter/backend/schnapps/")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -83,4 +83,26 @@
  )
 (require 'lsp-java)
 (add-hook 'java-mode-hook #'lsp)
+
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp-deferred))))
+
+;; Ensure ruff and pyright can run together
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-enabled-clients 'pyright)
+  (add-to-list 'lsp-enabled-clients 'ruff))
+
+(use-package pyvenv
+  :ensure t
+  :config
+  (pyvenv-mode 1))
+
 (setq visible-bell t)
+
+(add-hook 'js-mode-hook
+  (lambda ()
+    (setq js-indent-level 2)))
+(setq package-install-upgrade-built-in t)
