@@ -1,0 +1,2 @@
+;; Generated package description from cperl-mode.el  -*- no-byte-compile: t; lexical-binding:t -*-
+(define-package "cperl-mode" "33.0.0" "Perl code editing commands" '((emacs "26.1")) :commit "f4f249a2249a7047ba41a659b8fcdcd7e1caf4e0" :authors '(("Ilya Zakharevich" . "ilyaz@cpan.org") ("Jonathan Rockway" . "jon@jrock.us")) :maintainer '(nil . "emacs-devel@gnu.org") :keywords '("languages") :url "https://elpa.gnu.org/packages/cperl-mode.html")

@@ -16,6 +16,11 @@
 (load  "utils.el")
 
 ;;
+;; Trophy Hunter meta-model (model/src/main/resources/meta/*.json)
+;;
+(require 'hn-meta-mode)
+
+;;
 ;; ace jump mode major function
 ;;
 (add-to-list 'load-path (concat my-emacs-dir "ace-jump-mode/"))
@@ -67,13 +72,16 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(all-the-icons ample-theme company dashboard docker-compose-mode
-                   dockerfile-mode helpful jedi json-mode logview
-                   lsp-java lsp-pyright lua-mode magit nerd-icons
-                   page-break-lines projectile protobuf-mode
-                   pyenv-mode pyvenv qml-mode rg sqlformat swiper
-                   toc-org transient transient-posframe
-                   typescript-mode yasnippet))
+   '(all-the-icons ample-theme company cperl-mode csharp-mode dashboard
+                   dictionary docker-compose-mode dockerfile-mode
+                   editorconfig elixir-ts-mode faceup flymake helpful
+                   jedi json-mode less-css-mode logview lsp-java
+                   lsp-pyright lua-mode magit markdown-ts-mode
+                   nerd-icons org page-break-lines peg projectile
+                   protobuf-mode pyenv-mode pyvenv qml-mode rg
+                   sqlformat swiper timeout toc-org tramp transient
+                   transient-posframe typescript-mode verilog-mode
+                   wallpaper which-key yasnippet))
  '(safe-local-variable-directories '("/home/marek/Projects/TrophyHunter/backend/schnapps/")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
