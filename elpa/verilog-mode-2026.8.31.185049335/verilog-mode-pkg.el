@@ -1,0 +1,2 @@
+;; Generated package description from verilog-mode.el  -*- no-byte-compile: t; lexical-binding:t -*-
+(define-package "verilog-mode" "2026.8.31.185049335" "major mode for editing verilog source in Emacs" 'nil :commit "593241a5d018a9e0e14d70cbf2e7957338fdd468" :authors '(("Michael McNamara" . "mac@verilog.com") ("Wilson Snyder" . "wsnyder@wsnyder.org")) :maintainer '(("Michael McNamara" . "mac@verilog.com") ("Wilson Snyder" . "wsnyder@wsnyder.org")) :keywords '("languages") :url "https://www.veripool.org")

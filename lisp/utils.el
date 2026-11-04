@@ -1,3 +1,5 @@
+;;; utils.el --- Small utility functions -*- lexical-binding: t; -*-
+
 (add-hook 'before-save-hook
           (lambda()
             (delete-trailing-whitespace)

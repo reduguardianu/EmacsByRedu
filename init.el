@@ -1,3 +1,5 @@
+;;; init.el --- My personal Emacs configuration -*- lexical-binding: t; -*-
+
 (package-initialize)
 
 (server-mode t)
@@ -72,10 +74,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(all-the-icons ample-theme company cperl-mode csharp-mode dashboard
-                   dictionary docker-compose-mode dockerfile-mode
-                   editorconfig elixir-ts-mode faceup flymake helpful
-                   jedi json-mode less-css-mode logview lsp-java
+   '(all-the-icons ample-theme company cperl-mode dashboard dictionary
+                   docker-compose-mode dockerfile-mode editorconfig
+                   eglot elixir-ts-mode faceup flymake helpful jedi
+                   json-mode less-css-mode logview lsp-java
                    lsp-pyright lua-mode magit markdown-ts-mode
                    nerd-icons org page-break-lines peg projectile
                    protobuf-mode pyenv-mode pyvenv qml-mode rg
@@ -114,3 +116,12 @@
   (lambda ()
     (setq js-indent-level 2)))
 (setq package-install-upgrade-built-in t)
+
+;; Włączenie Company w całej konfiguracji
+(add-hook 'after-init-hook 'global-company-mode)
+
+;; Okno podpowiedzi pojawi się natychmiast po wpisaniu znaków
+(setq company-idle-delay 0.1)
+
+;; Okno otworzy się automatycznie po wpisaniu co najmniej 1 znaku
+(setq company-minimum-prefix-length 2)
